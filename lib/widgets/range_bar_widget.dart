@@ -43,14 +43,7 @@ class RangeBarWidget extends StatelessWidget {
     final maxValue = testMetadata.maximumValue;
     final valueRange = maxValue - minValue;
     
-    print('[BAR] ========================================');
-    print('[BAR] Building range bar widget');
-    print('[BAR] Input value: $inputValue');
-    print('[BAR] Min value: $minValue, Max value: $maxValue');
-    print('[BAR] Value range: $valueRange');
-    
     if (valueRange <= 0) {
-      print('[BAR] ❌ Error: Invalid range (min >= max)');
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -64,11 +57,6 @@ class RangeBarWidget extends StatelessWidget {
     }
 
     final currentRange = testMetadata.getRangeForValue(inputValue);
-    if (currentRange != null) {
-      print('[BAR] Current range: ${currentRange.label} (${currentRange.min}-${currentRange.max})');
-    } else {
-      print('[BAR] ⚠️ Input value $inputValue is outside all ranges');
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,9 +64,7 @@ class RangeBarWidget extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final barWidth = constraints.maxWidth.clamp(0.0, double.infinity);
-            print('[BAR] Bar width: $barWidth');
             if (barWidth <= 0) {
-              print('[BAR] ⚠️ Bar width is invalid, skipping render');
               return const SizedBox.shrink();
             }
             
@@ -88,18 +74,12 @@ class RangeBarWidget extends StatelessWidget {
               if (inputValue >= minValue && inputValue <= maxValue) {
                 final normalizedValue = ((inputValue - minValue) / valueRange).clamp(0.0, 1.0);
                 indicatorPosition = (normalizedValue * barWidth).clamp(0.0, barWidth - 3);
-                print('[BAR] Indicator position (within range): $indicatorPosition (normalized: $normalizedValue)');
               } else if (inputValue < minValue) {
                 indicatorPosition = 0.0;
-                print('[BAR] Indicator position (below min): $indicatorPosition');
               } else if (inputValue > maxValue) {
                 indicatorPosition = (barWidth - 3).clamp(0.0, barWidth);
-                print('[BAR] Indicator position (above max): $indicatorPosition');
               }
-            } else {
-              print('[BAR] ⚠️ Input value is not finite or is NaN');
             }
-            print('[BAR] ========================================');
 
             return Container(
               height: 70,

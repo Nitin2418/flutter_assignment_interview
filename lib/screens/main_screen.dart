@@ -32,24 +32,17 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _loadTestMetadata() async {
-    print('[MAIN] ========================================');
-    print('[MAIN] Loading test metadata...');
     _stateProvider.setLoading(true);
     _stateProvider.clearError();
     try {
       final metadata = await _apiService.fetchTestMetadata();
-      print('[MAIN] ✅ Metadata loaded successfully');
       _stateProvider.setTestMetadata(metadata);
       if (metadata.ranges.isNotEmpty) {
         final initialValue = metadata.minimumValue;
-        print('[MAIN] Setting initial value to: $initialValue');
         _textController.text = initialValue.toStringAsFixed(1);
         _stateProvider.updateInputValue(initialValue);
       }
-      print('[MAIN] ========================================');
     } catch (e) {
-      print('[MAIN] ❌ Error loading metadata: ${e.toString()}');
-      print('[MAIN] Error type: ${e.runtimeType}');
       String errorMessage = e.toString();
       if (errorMessage.startsWith('Exception: ')) {
         errorMessage = errorMessage.substring(11);
@@ -60,32 +53,23 @@ class _MainScreenState extends State<MainScreen> {
         }
       }
       final finalErrorMessage = errorMessage.isEmpty ? 'An unknown error occurred' : errorMessage;
-      print('[MAIN] Setting error message: $finalErrorMessage');
       _stateProvider.setError(finalErrorMessage);
-      print('[MAIN] ========================================');
     }
   }
 
   void _onTextChanged() {
     final text = _textController.text.trim();
-    print('[MAIN] Text field changed: "$text"');
     if (text.isNotEmpty) {
       final value = double.tryParse(text);
       if (value != null && value.isFinite) {
-        print('[MAIN] Parsed value: $value (valid)');
         _stateProvider.updateInputValue(value);
-      } else if (text.isNotEmpty) {
-        print('[MAIN] ⚠️ Invalid input: "$text" (not a valid number)');
       }
     } else {
-      print('[MAIN] Text field is empty, resetting to minimum value');
       final metadata = _stateProvider.testMetadata;
       if (metadata != null && metadata.ranges.isNotEmpty) {
         final minVal = metadata.minimumValue;
-        print('[MAIN] Resetting to minimum value: $minVal');
         _stateProvider.updateInputValue(minVal);
       } else {
-        print('[MAIN] No metadata available, resetting to 0.0');
         _stateProvider.updateInputValue(0.0);
       }
     }

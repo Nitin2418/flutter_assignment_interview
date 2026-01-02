@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'screens/main_screen.dart';
 
 void main() {
-  print('[APP] ========================================');
-  print('[APP] Flutter Assignment App Starting...');
-  print('[APP] ========================================');
   runApp(const MyApp());
 }
 
@@ -13,7 +10,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('[APP] Building MaterialApp');
     return MaterialApp(
       title: 'Flutter Assignment - Range Bar',
       debugShowCheckedModeBanner: false,
