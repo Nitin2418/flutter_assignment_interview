@@ -105,13 +105,25 @@ class ApiService {
       }
     } on TimeoutException {
       rethrow;
-    } on http.ClientException catch (e) {
+    } on SocketException catch (e) {
+      String message = e.message;
+      if (message.contains('Failed host lookup') || message.contains('getaddrinfo failed')) {
+        throw NetworkException('Failed to resolve host. Please check your internet connection and DNS settings.');
+      }
       throw NetworkException('Network error: ${e.message}. Please check your internet connection.');
-    } on SocketException {
-      throw NetworkException('Unable to connect to the server. Please check your internet connection.');
+    } on http.ClientException catch (e) {
+      String message = e.message;
+      if (message.contains('Failed host lookup') || message.contains('getaddrinfo failed')) {
+        throw NetworkException('Failed to resolve host. Please check your internet connection and DNS settings.');
+      }
+      throw NetworkException('Network error: ${e.message}. Please check your internet connection.');
     } catch (e) {
       if (e is ApiException || e is NetworkException || e is TimeoutException || e is DataException) {
         rethrow;
+      }
+      final errorString = e.toString();
+      if (errorString.contains('Failed host lookup') || errorString.contains('getaddrinfo failed') || errorString.contains('SocketException')) {
+        throw NetworkException('Network connection failed. Please check your internet connection.');
       }
       throw ApiException('Unexpected error: ${e.toString()}');
     }
